@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "mcp__Claude_Preview__preview_start",
+      "PowerShell(Set-Location \"C:\\\\Users\\\\cash\\\\OneDrive\\\\Documents\\\\MyProjects\\\\Agent\\\\VulnerabilityScanner\"; python _smoke.py 2>&1 | Where-Object { $_ -notmatch '^\\\\[db\\\\]' })",
+      "PowerShell(try { Invoke-RestMethod \"http://127.0.0.1:5000/api/health\" -TimeoutSec 8 | ConvertTo-Json -Compress } catch { \"health failed: $\\($_.Exception.Message\\)\" })"
+    ]
+  }
+}

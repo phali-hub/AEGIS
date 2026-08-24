@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "vulnscanner",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["VulnerabilityScanner/app.py"],
+      "port": 5000
+    },
+    {
+      "name": "sigma-static",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "4321", "--directory", "C:\\Users\\cash\\OneDrive\\Documents\\MyProjects\\Sigma Technologies"],
+      "port": 4321
+    }
+  ]
+}

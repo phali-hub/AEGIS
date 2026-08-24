@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Threat Intelligence Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <h1>🛡 Threat Agent</h1>
+        <div class="subtitle">Intelligence Platform</div>
+        <div class="version">v1.0 · AI-Powered</div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-item active" data-tab="dashboard">
+            <span class="nav-icon">📊</span> Dashboard
+        </div>
+        <div class="nav-item" data-tab="ip">
+            <span class="nav-icon">🖥</span> IP Lookup
+        </div>
+        <div class="nav-item" data-tab="url">
+            <span class="nav-icon">🔗</span> URL Scan
+        </div>
+        <div class="nav-item" data-tab="email">
+            <span class="nav-icon">📧</span> Email Analysis
+        </div>
+    </nav>
+    <div class="sidebar-footer">
+        <div style="margin-bottom:6px;">
+            <span class="api-dot off" id="dot-abuseipdb"></span> AbuseIPDB
+        </div>
+        <div style="margin-bottom:6px;">
+            <span class="api-dot off" id="dot-virustotal"></span> VirusTotal
+        </div>
+        <div>
+            <span class="api-dot off" id="dot-groq"></span> Groq AI
+        </div>
+    </div>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <h2>📊 Dashboard</h2>
+        <div class="topbar-status">
+            <span>Powered by abuse.ch · VT · AbuseIPDB</span>
+        </div>
+    </div>
+
+    <div class="content">
+        <div id="config-notice" class="config-notice" style="display:none;"></div>
+
+        <!-- ═══════════════ DASHBOARD ═══════════════ -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header"><span class="card-title"><span class="icon">🖥</span> IP Reputation Lookup</span></div>
+                    <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Check an IP address against AbuseIPDB for abuse reports, threat scores, and ISP intelligence.</p>
+                    <div class="input-group">
+                        <input type="text" id="dash-ip" placeholder="Enter IP address (e.g. 185.220.101.42)" style="font-family:var(--font-mono);">
+                        <button class="btn btn-primary" id="dash-btn-ip">Lookup</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><span class="card-title"><span class="icon">🔗</span> URL Threat Scan</span></div>
+                    <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Scan a URL through VirusTotal + URLhaus to detect phishing, malware, and C2 infrastructure.</p>
+                    <div class="input-group">
+                        <input type="text" id="dash-url" placeholder="https://example.com" style="font-family:var(--font-mono);">
+                        <button class="btn btn-primary" id="dash-btn-url">Scan</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="card-title"><span class="icon">📧</span> Phishing Email Analysis</span></div>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Paste a suspicious email (raw source or .eml content) for AI-powered phishing analysis.</p>
+                <div class="input-group">
+                    <textarea id="dash-email" placeholder="Paste raw email content (headers + body)..." style="min-height:100px;"></textarea>
+                </div>
+                <div style="margin-top:8px;">
+                    <button class="btn btn-primary" id="dash-btn-email">Analyze Email</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════ IP LOOKUP ═══════════════ -->
+        <div id="tab-ip" class="tab-content">
+            <div class="card">
+                <div class="card-header"><span class="card-title"><span class="icon">🖥</span> IP Address Lookup</span></div>
+                <div class="input-group">
+                    <input type="text" id="input-ip" placeholder="Enter IP address (e.g. 185.220.101.42)" style="font-family:var(--font-mono);">
+                    <button class="btn btn-primary" id="btn-lookup-ip">🔍 Lookup</button>
+                </div>
+            </div>
+            <div id="ip-result"></div>
+        </div>
+
+        <!-- ═══════════════ URL SCAN ═══════════════ -->
+        <div id="tab-url" class="tab-content">
+            <div class="card">
+                <div class="card-header"><span class="card-title"><span class="icon">🔗</span> URL Threat Scan</span></div>
+                <div class="input-group">
+                    <input type="text" id="input-url" placeholder="https://example.com/malicious" style="font-family:var(--font-mono);">
+                    <button class="btn btn-primary" id="btn-scan-url">🔍 Scan</button>
+                </div>
+            </div>
+            <div id="url-result"></div>
+        </div>
+
+        <!-- ═══════════════ EMAIL ANALYSIS ═══════════════ -->
+        <div id="tab-email" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title"><span class="icon">📧</span> Phishing Email Analysis</span>
+                </div>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">
+                    Paste the raw source of a suspicious email (headers + body). You can get this by opening an .eml file in a text editor or using "Show Original" in Gmail/Outlook.
+                </p>
+                <div class="input-group" style="flex-direction:column;">
+                    <textarea id="input-email" placeholder="From: scammer@example.com&#10;To: victim@company.com&#10;Subject: Your account has been compromised&#10;Date: Mon, 08 Jun 2026 10:00:00 +0000&#10;&#10;Dear user,&#10;Your account has been compromised. Click here to verify: http://evil.com/login"></textarea>
+                    <div style="display:flex;gap:8px;margin-top:8px;">
+                        <button class="btn btn-primary" id="btn-analyze-email">🔍 Analyze Email</button>
+                        <button class="btn btn-secondary" id="btn-load-sample">📄 Load Sample</button>
+                    </div>
+                </div>
+            </div>
+            <div id="email-result"></div>
+        </div>
+
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+(function() {
+    const tabs = ['ip', 'url', 'email'];
+    tabs.forEach(t => {
+        const dashBtn = document.getElementById('dash-btn-' + t);
+        const dashInput = document.getElementById('dash-' + t);
+        if (dashBtn && dashInput) {
+            dashBtn.addEventListener('click', () => {
+                const mainInput = document.getElementById('input-' + t);
+                if (mainInput) mainInput.value = dashInput.value;
+                const navItem = document.querySelector(`.nav-item[data-tab="${t}"]`);
+                if (navItem) navItem.click();
+            });
+            dashInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { dashBtn.click(); }
+            });
+        }
+    });
+    const sampleBtn = document.getElementById('btn-load-sample');
+    if (sampleBtn) {
+        sampleBtn.addEventListener('click', () => {
+            const ta = document.getElementById('input-email');
+            if (!ta) return;
+            ta.value = `From: "PayPal Security" <security@paypa1-verify.com>
+To: victim@example.com
+Subject: URGENT: Your account has been limited
+Date: Mon, 08 Jun 2026 09:45:23 +0000
+Reply-To: security-verify@paypa1-verify.com
+Message-ID: <fak3d@mx.paypa1-verify.com>
+Return-Path: <bounce@paypa1-verify.com>
+Received-SPF: softfail (domain: paypa1-verify.com)
+DKIM-Signature: v=1; a=rsa-sha256; d=paypa1-verify.com; s=google;
+Authentication-Results: mx.google.com;
+       spf=softfail (google.com: domain of bounce@paypa1-verify.com designates 185.220.101.42 as permitted sender) smtp.mailfrom=bounce@paypa1-verify.com;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=paypa1-verify.com
+
+Dear Valued Customer,
+
+We have detected unusual activity on your PayPal account. Your account has been temporarily limited.
+
+To restore full access, you must verify your identity immediately:
+
+https://paypa1-verify.com/secure/login?id=9f8a7b6c
+
+Failure to verify within 24 hours will result in permanent account suspension.
+
+This is an automated security message. Do not reply to this email.
+
+Sincerely,
+PayPal Security Team`;
+            document.getElementById('btn-analyze-email').click();
+        });
+    }
+})();
+</script>
+</body>
+</html>
