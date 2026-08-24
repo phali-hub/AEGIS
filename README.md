@@ -1,4 +1,4 @@
-# CyberSec Agent — AI-Powered Threat Intelligence & Cyber Defense Platform
+# AEGIS — AI-Powered Threat Intelligence & Cyber Defense Platform
 
 A comprehensive cybersecurity platform combining real-time threat intelligence, AI-driven analysis, and autonomous vulnerability scanning under a single unified interface.
 
